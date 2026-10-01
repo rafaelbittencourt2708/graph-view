@@ -2,6 +2,7 @@
   "name": "brain-graph",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Share a folder of linked markdown notes from a private GitHub repo as a navigable graph.",
   "type": "module",
   "engines": {
