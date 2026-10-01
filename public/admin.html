@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23141416%22/%3E%3Cpath d=%22M9 22L16 10L23 20%22 stroke=%22%238fa7bf%22 stroke-width=%221.5%22 fill=%22none%22/%3E%3Ccircle cx=%229%22 cy=%2222%22 r=%223.5%22 fill=%22%236fd6c8%22/%3E%3Ccircle cx=%2216%22 cy=%2210%22 r=%223.5%22 fill=%22%23ffc857%22/%3E%3Ccircle cx=%2223%22 cy=%2220%22 r=%223.5%22 fill=%22%23ff8f7e%22/%3E%3C/svg%3E">
+  <title>brain-graph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body class="admin">
+  <main>
+    <div class="masthead">
+      <h1>brain-graph</h1>
+      <p>Share a folder of notes from a private repo as a map. The repo stays private.</p>
+    </div>
+
+    <section aria-labelledby="new-h">
+      <h2 id="new-h">New link</h2>
+
+      <div class="step" id="step-repo">
+        <div class="num">1</div>
+        <div>
+          <label class="label" for="repo-url">Repository</label>
+          <form class="row" id="repo-form" style="margin-top:6px">
+            <input class="field" id="repo-url" placeholder="github.com/owner/notes-repo" required>
+            <button class="btn secondary" type="submit" id="load-btn">Load folders</button>
+          </form>
+          <div class="error" id="repo-error" hidden></div>
+        </div>
+      </div>
+
+      <div class="step disabled" id="step-folder">
+        <div class="num">2</div>
+        <div>
+          <div class="row" style="align-items:center">
+            <span class="label">Folder</span>
+            <span style="flex:1"></span>
+            <label class="label" for="branch">Branch</label>
+            <select class="field" id="branch"></select>
+          </div>
+          <ul class="folders" id="folders"></ul>
+          <p class="help">Anyone with the link sees every note in this folder and its subfolders, and nothing outside it.</p>
+          <div class="warn" id="root-warn" hidden>This shares the whole repository. Pick a narrower folder unless everything in it is fine to show.</div>
+        </div>
+      </div>
+
+      <div class="step disabled" id="step-name">
+        <div class="num">3</div>
+        <div>
+          <label class="label" for="title">Name shown on the map</label>
+          <form class="row" id="create-form" style="margin-top:6px">
+            <input class="field" id="title" maxlength="120">
+            <button class="btn" type="submit" id="create-btn">Create link</button>
+          </form>
+          <label class="label" for="password" style="display:block;margin-top:14px">Password</label>
+          <div class="row" style="margin-top:6px">
+            <input class="field" id="password" form="create-form" minlength="8" maxlength="200" autocomplete="off" spellcheck="false" placeholder="At least 8 characters. Leave empty for no password.">
+            <button class="btn secondary" type="button" id="gen-password">Generate</button>
+          </div>
+          <p class="help">Viewers type it once per browser and stay signed in for 30 days. Send it separately from the link.</p>
+          <div class="error" id="create-error" hidden></div>
+          <div class="created" id="created" hidden>
+            <div class="label" id="created-note">Link created. Anyone who has it can open the map.</div>
+            <div class="row">
+              <input class="field" id="created-url" readonly>
+              <button class="btn" type="button" data-copy="created-url">Copy link</button>
+              <a class="btn secondary" id="created-open" target="_blank" rel="noopener">Open</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="links-h">
+      <h2 id="links-h">Active links</h2>
+      <table class="links">
+        <thead><tr><th class="label">Name</th><th class="label">Source</th><th class="label">Password</th><th class="label">Created</th><th></th></tr></thead>
+        <tbody id="links"></tbody>
+      </table>
+      <div class="empty" id="links-empty" hidden>No active links yet. Create one above.</div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="/assets/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "brain-graph",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Share a folder of linked markdown notes from a private GitHub repo as a navigable graph.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch --env-file-if-exists=.env src/server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test 'test/*.test.js'"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "hono": "^4.13.9",
+    "tar-stream": "^3.2.1",
+    "yaml": "^2.9.1"
+  }
+}

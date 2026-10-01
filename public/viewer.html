@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23141416%22/%3E%3Cpath d=%22M9 22L16 10L23 20%22 stroke=%22%238fa7bf%22 stroke-width=%221.5%22 fill=%22none%22/%3E%3Ccircle cx=%229%22 cy=%2222%22 r=%223.5%22 fill=%22%236fd6c8%22/%3E%3Ccircle cx=%2216%22 cy=%2210%22 r=%223.5%22 fill=%22%23ffc857%22/%3E%3Ccircle cx=%2223%22 cy=%2220%22 r=%223.5%22 fill=%22%23ff8f7e%22/%3E%3C/svg%3E">
+  <title>Notes map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body class="viewer">
+  <div id="map" class="stage" aria-label="Map of notes and the links between them" hidden></div>
+  <div id="stage3d" class="stage stage3d" aria-label="3D map of notes and the links between them" hidden>
+    <div class="graph3d"></div>
+    <div class="labels3d" aria-hidden="true"></div>
+  </div>
+
+  <aside class="nav" id="nav" aria-label="Browse notes">
+    <header>
+      <h1 id="title">Loading…</h1>
+      <div class="meta" id="meta">&nbsp;</div>
+    </header>
+    <div class="search">
+      <svg viewBox="0 0 16 16" fill="none" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+      <input id="q" type="search" placeholder="Filter notes" autocomplete="off" aria-label="Filter notes" aria-controls="tree">
+      <kbd>/</kbd>
+    </div>
+    <div class="tree" id="tree" role="tree" aria-label="Notes by type"></div>
+  </aside>
+  <button class="nav-toggle" id="nav-toggle" aria-controls="nav" aria-expanded="false">
+    <svg viewBox="0 0 16 16" fill="none" stroke-width="1.6" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+    <span>Notes</span>
+  </button>
+
+  <div class="tools">
+    <div class="segmented" id="view" role="group" aria-label="Flat or 3D map">
+      <button data-view="2d" aria-pressed="false">2D</button>
+      <button data-view="3d" aria-pressed="true">3D</button>
+    </div>
+    <div class="segmented" id="focus" role="group" aria-label="How much of the map to show">
+      <button data-hops="0" aria-pressed="true">Whole map</button>
+      <button data-hops="1" aria-pressed="false" disabled>Neighbors</button>
+      <button data-hops="2" aria-pressed="false" disabled>2 steps</button>
+    </div>
+    <button class="tool-btn" id="fit" title="Fit the map to the screen">Fit</button>
+  </div>
+
+  <div class="status" id="status">Drawing the map…</div>
+
+  <aside class="sheet" id="sheet" hidden aria-labelledby="note-title">
+    <button class="close" id="close" aria-label="Close note"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    <div class="scroll" id="sheet-scroll"></div>
+  </aside>
+
+  <aside class="sheet player" id="player" hidden aria-labelledby="player-title">
+    <div class="player-head">
+      <button class="player-back" id="player-back" aria-label="Back to the note" title="Back to the note (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
+      <div class="player-name">
+        <h2 id="player-title">Recording</h2>
+        <div class="player-sub" id="player-sub"></div>
+      </div>
+      <a class="player-out" id="player-out" target="_blank" rel="noopener noreferrer" title="Open this recording in Fathom">Fathom ↗</a>
+    </div>
+    <div class="player-screen">
+      <video id="player-video" controls playsinline preload="metadata"></video>
+      <div class="player-wait" id="player-wait" hidden></div>
+    </div>
+    <div class="scroll" id="player-scroll"></div>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/layout-base@2.0.1/layout-base.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cose-base@2.2.0/cose-base.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="/assets/view2d.js"></script>
+  <script src="/assets/view3d.js"></script>
+  <script src="/assets/viewer.js"></script>
+</body>
+</html>
