@@ -213,7 +213,7 @@ body.viewer { overflow: hidden; }
 /* A note opens as a side pane, like an issue in Linear. */
 .sheet {
   position: fixed; top: var(--inset); right: var(--inset); bottom: var(--inset);
-  width: min(480px, calc(100vw - 32px));
+  width: var(--sheet-w);
   background: rgba(20, 20, 22, 0.9);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
@@ -228,6 +228,9 @@ body.viewer { overflow: hidden; }
   transform: translateX(0);
   transition: transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms;
 }
+/* Notes with wide tables (the overviews) get a wider sheet, still leaving the map a strip beside it. */
+:root { --sheet-w: min(480px, calc(100vw - 32px)); }
+body:has(.sheet.wide:not([hidden])) { --sheet-w: max(min(480px, calc(100vw - 32px)), min(900px, calc(100vw - var(--nav-w) - 340px))); }
 .sheet[hidden] { display: flex; transform: translateX(calc(100% + 32px)); opacity: 0; pointer-events: none; visibility: hidden; }
 .sheet .scroll { overflow: auto; padding: var(--pad-top) var(--pad) var(--pad-bottom); flex: 1; border-radius: inherit; }
 .sheet .close {
@@ -281,7 +284,7 @@ body.viewer { overflow: hidden; }
 .prose h2 { font-size: 15px; font-weight: 600; }
 .prose h3 { font-size: 14px; font-weight: 600; }
 .prose strong { color: var(--text); font-weight: 600; }
-.prose p, .prose ul, .prose ol, .prose blockquote, .prose table { margin: 0 0 0.9em; }
+.prose p, .prose ul, .prose ol, .prose blockquote { margin: 0 0 0.9em; }
 .prose ul, .prose ol { padding-left: 1.25em; }
 .prose li { margin: 0.25em 0; }
 .prose li::marker { color: var(--text-3); }
@@ -295,9 +298,47 @@ body.viewer { overflow: hidden; }
 .prose code { font-family: var(--mono); font-size: 0.85em; background: var(--active); padding: 1px 5px; border-radius: 4px; }
 .prose pre { background: var(--raised); border: 1px solid var(--border); padding: 12px; overflow: auto; border-radius: 8px; }
 .prose pre code { background: none; padding: 0; }
-.prose table { border-collapse: collapse; font-size: 13px; display: block; overflow-x: auto; }
-.prose th, .prose td { border: 1px solid var(--border); padding: 6px 9px; text-align: left; vertical-align: top; }
-.prose th { font-size: 12px; font-weight: 500; color: var(--text-2); background: var(--hover); }
+/* Tables: rows ruled, not boxed; the first column (usually the ID) stays put while a wide table scrolls. */
+.prose .table-wrap {
+  margin: 0 0 1.2em; overflow-x: auto;
+  border: 1px solid var(--border); border-radius: 8px; background: rgba(255, 255, 255, 0.015);
+}
+.prose table { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: 13px; line-height: 1.5; margin: 0; }
+.prose th, .prose td { padding: 8px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+.prose tr:last-child td { border-bottom: 0; }
+.prose th {
+  font-size: 11.5px; font-weight: 500; color: var(--text-3); white-space: nowrap;
+  background: #18181b; border-bottom-color: var(--border-strong);
+}
+.prose tbody tr:hover td { background: #1a1a1d; }
+.prose th:first-child, .prose td:first-child { position: sticky; left: 0; z-index: 1; box-shadow: inset -1px 0 var(--border); }
+.prose td:first-child { background: #161618; }
+.prose td.long { min-width: 15em; }
+.prose td.none { color: var(--text-3); }
+/* A cell of links: chips that keep an ID whole ("PAIN-001") and wear their note's color. */
+.prose td.refs { min-width: 8em; }
+.prose td.refs-2 { min-width: calc(14em + 24px); }
+.prose td.refs-3 { min-width: calc(21em + 24px); }
+.prose td.refs > * {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  margin: 1px 4px 3px 0; padding: 1px 7px 1px 6px; border-radius: 5px;
+  font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums;
+  background: var(--raised); border: 1px solid var(--border-strong); color: var(--text);
+  text-decoration: none;
+}
+.prose td.refs > a::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--text-3)); flex: none; }
+.prose td.refs > a:hover { text-decoration: none; background: var(--accent-bg); border-color: rgba(124, 132, 246, 0.45); }
+/* Names (departments, people) read better as a short dotted list than as boxes. */
+.prose td.refs > .name {
+  display: flex; align-items: flex-start; white-space: normal;
+  margin: 0 0 4px; padding: 0; border: 0; background: none; border-radius: 0;
+}
+.prose td.refs > a.name::before { margin-top: 6px; }
+.prose td.refs > a.name:hover { background: none; color: var(--accent); }
+.prose td.refs:has(> .name) { min-width: 13em; }
+.prose td.refs > .missing { text-decoration: line-through; }
+.prose td.refs > .outside { border-style: dotted; }
+.prose td:first-child.refs { min-width: 0; }
 .prose hr { border: 0; border-top: 1px solid var(--border); margin: 1.5em 0; }
 .prose img { display: none; }
 
@@ -377,7 +418,7 @@ body.player-open .sheet:not(.player) { transform: translateX(-10px) scale(0.98);
 
 /* Keep the map beside the open sheet so focused nodes aren't hidden under it. */
 @media (min-width: 721px) {
-  body.sheet-open .stage { right: calc(min(480px, calc(100vw - 32px)) + var(--inset) * 2); }
+  body.sheet-open .stage { right: calc(var(--sheet-w) + var(--inset) * 2); }
 }
 
 @media (max-width: 720px) {

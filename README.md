@@ -17,6 +17,9 @@ with a link you can hand out (optionally with a password). The repo itself stays
   Sections and their types show in that order; types no section lists go under "Other". Each
   section's eye shows or hides all its types on the map at once. Without `sections`, types are
   listed alphabetically.
+- Tables read like a list view: a cell of links (`PAIN-001, PAIN-002`) shows as chips in each
+  note's color that never split mid-ID and name the note on hover, the first column stays put
+  while a wide table scrolls, and a table too wide for the note pane widens the pane.
 - Transcripts (Fathom-style: speaker, time, text) are shown turn by turn, one color per speaker.
   A link ending in `#t=17:08` (the brain writes these on every quote) opens the transcript at that
   moment, highlights the quoted words, and says who said it, with a way back to the quoting note.

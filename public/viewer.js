@@ -526,12 +526,53 @@
         if (/^https:\/\/fathom\.video\//.test(href)) a.classList.add('watch'); // a quote's "▶ Watch"
       }
     }
+    tidyTables();
     setSheetOpen(true);
     $('sheet-scroll').scrollTop = 0;
     const quote = state.quote;
     state.quote = null;
     const at = frag && frag.match(/^t=(\d{1,2}:\d{2}(?::\d{2})?)$/);
     if (n.transcript && at) jumpTo(n, at[1], quote && quote.src === n.id ? quote : null);
+  }
+
+  // Overview tables are mostly lists of links ("PAIN-001, PAIN-002, …"). A cell of only links becomes
+  // a wrap of chips: an ID never splits at its hyphen, each chip has its note's color, and hovering one
+  // names the note. Long text gets room to breathe, and a table that doesn't fit widens the sheet.
+  function tidyTables() {
+    const was = $('sheet').classList.contains('wide');
+    $('sheet').classList.remove('wide'); // measured at the usual width
+    const wraps = [];
+    for (const table of $('sheet-scroll').querySelectorAll('.prose table')) {
+      const wrap = document.createElement('div');
+      wrap.className = 'table-wrap';
+      table.replaceWith(wrap);
+      wrap.append(table);
+      wraps.push(wrap);
+      for (const td of table.querySelectorAll('td')) {
+        const parts = [...td.childNodes];
+        const refs = parts.filter((p) => p.nodeType === 1 && p.matches('a[href^="#n="], .outside, .missing'));
+        if (refs.length && parts.every((p) => refs.includes(p) || /^[\s,;·]*$/.test(p.textContent))) {
+          td.classList.add('refs');
+          if (refs.length > 2) td.classList.add(refs.length > 4 ? 'refs-3' : 'refs-2'); // room for chips side by side
+          td.replaceChildren(...refs);
+          for (const r of refs) {
+            if (/\s/.test(r.textContent.trim())) r.classList.add('name'); // a name may wrap; an ID never
+            const m = (r.getAttribute('href') || '').match(/^#n=([^&]+)/);
+            const x = m && state.byId.get(decodeURIComponent(m[1]));
+            if (!x) continue;
+            r.style.setProperty('--c', colorOf(x.type));
+            if (x.label !== r.textContent.trim()) r.title = x.label;
+          }
+        } else if (/^[—–-]?$/.test(td.textContent.trim())) {
+          td.classList.add('none');
+        } else if (td.textContent.trim().length > 32) {
+          td.classList.add('long');
+        }
+      }
+    }
+    const wide = wraps.some((w) => w.scrollWidth > w.clientWidth + 1);
+    $('sheet').classList.toggle('wide', wide);
+    if (was !== wide && !$('sheet').hidden && view) view.resize(); // the map beside it changed width
   }
 
   // ---- Connection filter: which kinds of connected notes to show around the open note ----
